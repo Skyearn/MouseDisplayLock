@@ -655,6 +655,19 @@ final class LockManager: ObservableObject {
 
 
     /*
+     * ============================================================
+     * 鼠标按下状态（用于防止边界在按下期间解除）
+     * ============================================================
+     */
+
+    private let mouseStateLock =
+        NSLock()
+
+    private var isMouseDown =
+        false
+
+
+    /*
      * 异步 Warp 定时器。
      *
      * 在专用队列上以 250Hz（4ms）运行，
@@ -771,8 +784,14 @@ final class LockManager: ObservableObject {
 
         /*
          * 记录当前光标位置作为起始点，
-         * 并限制在屏幕内。
+         * 并限制在屏幕内（使用内缩边界，避免系统边缘触发）。
          */
+
+        let inset: CGFloat = 1.0
+        let minX = screenFrame.minX + inset
+        let maxX = screenFrame.maxX - inset
+        let minY = screenFrame.minY + inset
+        let maxY = screenFrame.maxY - inset
 
         var mouseLocation =
             NSEvent.mouseLocation
@@ -781,18 +800,18 @@ final class LockManager: ObservableObject {
             min(
                 max(
                     mouseLocation.x,
-                    screenFrame.minX
+                    minX
                 ),
-                screenFrame.maxX
+                maxX
             )
 
         mouseLocation.y =
             min(
                 max(
                     mouseLocation.y,
-                    screenFrame.minY
+                    minY
                 ),
-                screenFrame.maxY
+                maxY
             )
 
         currentCursorPosition =
@@ -829,7 +848,7 @@ final class LockManager: ObservableObject {
 
 
         /*
-         * 安装 CGEventTap（listenOnly，读取 delta）。
+         * 安装 CGEventTap（listenOnly，读取 delta + 鼠标按下/抬起状态）。
          */
 
         installRelativeMouseMonitor()
@@ -1003,11 +1022,21 @@ final class LockManager: ObservableObject {
             runLoop
 
 
+        /*
+         * 扩展事件掩码：不仅监听移动/拖动，还监听鼠标按下/抬起。
+         * 这样我们可以在鼠标按下期间阻止边界解除，避免“穿屏点击”。
+         */
         let eventMask: CGEventMask = (
             1 << CGEventType.mouseMoved.rawValue |
             1 << CGEventType.leftMouseDragged.rawValue |
             1 << CGEventType.rightMouseDragged.rawValue |
-            1 << CGEventType.otherMouseDragged.rawValue
+            1 << CGEventType.otherMouseDragged.rawValue |
+            1 << CGEventType.leftMouseDown.rawValue |
+            1 << CGEventType.leftMouseUp.rawValue |
+            1 << CGEventType.rightMouseDown.rawValue |
+            1 << CGEventType.rightMouseUp.rawValue |
+            1 << CGEventType.otherMouseDown.rawValue |
+            1 << CGEventType.otherMouseUp.rawValue
         )
 
 
@@ -1040,104 +1069,160 @@ final class LockManager: ObservableObject {
 
 
                 /*
-                 * 诊断：检测事件接收间隔。
-                 *
-                 * 正常 ~1ms（8000Hz 鼠标合并后），
-                 * 超过 20ms 说明 EventTap 被阻塞。
+                 * --------------------------------------------------
+                 * 1. 鼠标按下/抬起状态跟踪
+                 * --------------------------------------------------
                  */
 
-                let now =
-                    DispatchTime.now()
-                        .uptimeNanoseconds
+                let eventType = event.type
 
-                let lastEvent =
-                    manager.lastEventTimeNanos
+                switch eventType {
 
-                if lastEvent != 0 {
+                case .leftMouseDown,
+                     .rightMouseDown,
+                     .otherMouseDown:
 
-                    let gap =
-                        now - lastEvent
+                    manager.mouseStateLock.lock()
+                    manager.isMouseDown = true
+                    manager.mouseStateLock.unlock()
 
-                    if gap > 20_000_000 {
+                case .leftMouseUp,
+                     .rightMouseUp,
+                     .otherMouseUp:
 
-                        print(
-                            "⚠️ [EventTap] 事件间隔 \(gap / 1_000_000)ms"
-                        )
+                    manager.mouseStateLock.lock()
+                    manager.isMouseDown = false
+                    manager.mouseStateLock.unlock()
+
+                    /*
+                     * 鼠标抬起时，重新评估锁定状态。
+                     * 如果此前因为按下而推迟了解除，现在可以执行了。
+                     */
+                    DispatchQueue.main.async {
+                        manager.updateApplicationState()
                     }
 
-                    if gap > manager.maxEventGap {
-
-                        manager.maxEventGap =
-                            gap
-                    }
+                default:
+                    break
                 }
 
-                manager.lastEventTimeNanos =
-                    now
-
-                manager.eventCount =
-                    manager.eventCount &+ 1
-
 
                 /*
-                 * 从 CGEvent 中获取 delta。
-                 *
-                 * delta 是系统加速度处理后的像素位移，
-                 * 累加后 Warp 即可，手感接近系统原生。
+                 * --------------------------------------------------
+                 * 2. 只对移动/拖动事件处理 delta（累加位置）
+                 * --------------------------------------------------
                  */
 
-                let deltaX =
-                    event.getDoubleValueField(
-                        .mouseEventDeltaX
-                    )
+                switch eventType {
 
-                let deltaY =
-                    event.getDoubleValueField(
-                        .mouseEventDeltaY
-                    )
+                case .mouseMoved,
+                     .leftMouseDragged,
+                     .rightMouseDragged,
+                     .otherMouseDragged:
 
+                    /*
+                     * 诊断：检测事件接收间隔。
+                     *
+                     * 正常 ~1ms（8000Hz 鼠标合并后），
+                     * 超过 20ms 说明 EventTap 被阻塞。
+                     */
 
-                manager.handleRelativeMouseDelta(
-                    deltaX: CGFloat(deltaX),
-                    deltaY: CGFloat(deltaY)
-                )
+                    let now =
+                        DispatchTime.now()
+                            .uptimeNanoseconds
 
+                    let lastEvent =
+                        manager.lastEventTimeNanos
 
-                /*
-                 * 诊断：周期性输出统计（每 1 秒）。
-                 */
+                    if lastEvent != 0 {
 
-                if manager.lastStatsTimeNanos == 0 {
+                        let gap =
+                            now - lastEvent
 
-                    manager.lastStatsTimeNanos =
+                        if gap > 20_000_000 {
+
+                            print(
+                                "⚠️ [EventTap] 事件间隔 \(gap / 1_000_000)ms"
+                            )
+                        }
+
+                        if gap > manager.maxEventGap {
+
+                            manager.maxEventGap =
+                                gap
+                        }
+                    }
+
+                    manager.lastEventTimeNanos =
                         now
-                } else if
-                    now - manager.lastStatsTimeNanos
-                        >= 1_000_000_000
-                {
 
-                    let elapsedSec =
-                        Double(
-                            now - manager.lastStatsTimeNanos
-                        ) / 1_000_000_000
+                    manager.eventCount =
+                        manager.eventCount &+ 1
 
-                    let hz =
-                        Double(manager.eventCount) / elapsedSec
 
-                    let warpHz =
-                        Double(manager.warpCount) / elapsedSec
+                    /*
+                     * 从 CGEvent 中获取 delta。
+                     *
+                     * delta 是系统加速度处理后的像素位移，
+                     * 累加后 Warp 即可，手感接近系统原生。
+                     */
 
-                    print(
-                        "📊 [Stats] 事件 \(Int(hz))Hz | Warp \(Int(warpHz))Hz | 最大间隔 事件\(manager.maxEventGap / 1_000_000)ms Warp\(manager.maxWarpGap / 1_000_000)ms | 锁等待\(manager.maxLockWait / 1_000_000)ms | Warp耗时\(manager.maxWarpDuration / 1_000_000)ms"
+                    let deltaX =
+                        event.getDoubleValueField(
+                            .mouseEventDeltaX
+                        )
+
+                    let deltaY =
+                        event.getDoubleValueField(
+                            .mouseEventDeltaY
+                        )
+
+
+                    manager.handleRelativeMouseDelta(
+                        deltaX: CGFloat(deltaX),
+                        deltaY: CGFloat(deltaY)
                     )
 
-                    manager.eventCount = 0
-                    manager.warpCount = 0
-                    manager.maxEventGap = 0
-                    manager.maxWarpGap = 0
-                    manager.maxLockWait = 0
-                    manager.maxWarpDuration = 0
-                    manager.lastStatsTimeNanos = now
+
+                    /*
+                     * 诊断：周期性输出统计（每 1 秒）。
+                     */
+
+                    if manager.lastStatsTimeNanos == 0 {
+
+                        manager.lastStatsTimeNanos =
+                            now
+                    } else if
+                        now - manager.lastStatsTimeNanos
+                            >= 1_000_000_000
+                    {
+
+                        let elapsedSec =
+                            Double(
+                                now - manager.lastStatsTimeNanos
+                            ) / 1_000_000_000
+
+                        let hz =
+                            Double(manager.eventCount) / elapsedSec
+
+                        let warpHz =
+                            Double(manager.warpCount) / elapsedSec
+
+                        print(
+                            "📊 [Stats] 事件 \(Int(hz))Hz | Warp \(Int(warpHz))Hz | 最大间隔 事件\(manager.maxEventGap / 1_000_000)ms Warp\(manager.maxWarpGap / 1_000_000)ms | 锁等待\(manager.maxLockWait / 1_000_000)ms | Warp耗时\(manager.maxWarpDuration / 1_000_000)ms"
+                        )
+
+                        manager.eventCount = 0
+                        manager.warpCount = 0
+                        manager.maxEventGap = 0
+                        manager.maxWarpGap = 0
+                        manager.maxLockWait = 0
+                        manager.maxWarpDuration = 0
+                        manager.lastStatsTimeNanos = now
+                    }
+
+                default:
+                    break
                 }
 
 
@@ -1262,7 +1347,7 @@ final class LockManager: ObservableObject {
 
 
     /*
-     * 处理鼠标 delta，累加位置并限制在屏幕内。
+     * 处理鼠标 delta，累加位置并限制在屏幕内（内缩边界）。
      *
      * 异步 Warp 策略：
      *   - 每个事件只累加 delta + clamp（微秒级，无 IPC）
@@ -1290,6 +1375,22 @@ final class LockManager: ObservableObject {
 
 
         /*
+         * 内缩边界：向内缩进 1.0 个点（Point）。
+         *
+         * 光标永远不会触达物理屏幕边缘，彻底消除系统边界触发，
+         * 避免游戏光标与系统光标反复切换。
+         */
+        let inset: CGFloat = 1.0
+        let minX = screenFrame.minX + inset
+        let maxX = screenFrame.maxX - inset
+        let minY = screenFrame.minY + inset
+        let maxY = screenFrame.maxY - inset
+
+        // 防止屏幕极小（< 2pt）导致边界反转，但实际不存在
+        guard minX < maxX, minY < maxY else { return }
+
+
+        /*
          * 累加 delta。
          *
          *   - Y 轴取反（CGEvent.deltaY 和 Cocoa 坐标方向相反）
@@ -1314,25 +1415,25 @@ final class LockManager: ObservableObject {
 
 
         /*
-         * 限制在屏幕边界内。
+         * 限制在（内缩后的）屏幕边界内。
          */
 
         newX =
             min(
                 max(
                     newX,
-                    screenFrame.minX
+                    minX
                 ),
-                screenFrame.maxX
+                maxX
             )
 
         newY =
             min(
                 max(
                     newY,
-                    screenFrame.minY
+                    minY
                 ),
-                screenFrame.maxY
+                maxY
             )
 
 
@@ -1508,10 +1609,42 @@ final class LockManager: ObservableObject {
 
         positionLock.lock()
 
-        let pos =
+        var pos =
             currentCursorPosition
 
         positionLock.unlock()
+
+
+        /*
+         * --------------------------------------------------
+         * 二次边界保护：使用内缩边界，防止光标触达物理边缘
+         * --------------------------------------------------
+         */
+
+        if let frame = cachedScreenFrame {
+
+            let inset: CGFloat = 1.0
+            let minX = frame.minX + inset
+            let maxX = frame.maxX - inset
+            let minY = frame.minY + inset
+            let maxY = frame.maxY - inset
+
+            // 如果位置接近或等于原始边界（浮点误差），强制拉回内缩边界
+            if pos.x >= frame.maxX - 0.1 || pos.x <= frame.minX + 0.1 ||
+               pos.y >= frame.maxY - 0.1 || pos.y <= frame.minY + 0.1 {
+
+                pos.x = min(max(pos.x, minX), maxX)
+                pos.y = min(max(pos.y, minY), maxY)
+
+                // 同步更新 currentCursorPosition
+                positionLock.lock()
+                currentCursorPosition = pos
+                positionLock.unlock()
+
+                // 同时更新 lastWarpPosition，避免后续再 Warp 相同位置
+                lastWarpPosition = pos
+            }
+        }
 
 
         /*
@@ -2020,6 +2153,9 @@ final class LockManager: ObservableObject {
         /*
          * ----------------------------------------------------
          * 根据前台状态切换边界限制
+         *
+         * 关键修复：如果鼠标正在按下中，推迟解除边界，
+         * 避免按下期间因应用切换导致光标跳到其他屏幕。
          * ----------------------------------------------------
          */
 
@@ -2029,6 +2165,24 @@ final class LockManager: ObservableObject {
             enableBoundaryMode()
 
         } else {
+
+            /*
+             * 需要解除边界时，先检查鼠标是否按下。
+             * 按下中则暂不解禁，等待鼠标抬起事件触发再次评估。
+             */
+
+            mouseStateLock.lock()
+            let down = isMouseDown
+            mouseStateLock.unlock()
+
+            if down {
+
+                /*
+                 * 鼠标按下中，不解禁。
+                 * 边界保持，防止点击穿透到其他屏幕。
+                 */
+                return
+            }
 
             disableBoundaryMode()
         }
