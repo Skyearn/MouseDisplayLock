@@ -1,0 +1,61 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build & Release
+    runs-on: macos-15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer || true
+
+      - name: Build Release
+        run: |
+          xcodebuild \
+            -project MouseDisplayLock.xcodeproj \
+            -scheme MouseDisplayLock \
+            -configuration Release \
+            -destination 'generic/platform=macOS' \
+            MACOSX_DEPLOYMENT_TARGET=15.0 \
+            build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Locate build product
+        id: product
+        run: |
+          APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData/MouseDisplayLock-* \
+            -path "*/Build/Products/Release/MouseDisplayLock.app" \
+            -type d 2>/dev/null | head -1)
+          echo "app_path=$APP_PATH" >> "$GITHUB_OUTPUT"
+          echo "Found: $APP_PATH"
+
+      - name: Create zip
+        id: zip
+        run: |
+          cd "$(dirname '${{ steps.product.outputs.app_path }}')"
+          zip -r -y MouseDisplayLock.app.zip MouseDisplayLock.app
+          ZIP_PATH="$(pwd)/MouseDisplayLock.app.zip"
+          echo "zip_path=$ZIP_PATH" >> "$GITHUB_OUTPUT"
+          ls -lh "$ZIP_PATH"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.zip.outputs.zip_path }}
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

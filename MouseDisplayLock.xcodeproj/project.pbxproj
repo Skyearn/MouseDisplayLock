@@ -6,43 +6,14 @@
 	objectVersion = 110;
 	objects = {
 
-/* Begin PBXContainerItemProxy section */
-		613D5FD6301CBB74002EC6D1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 613D5FC0301CBB73002EC6D1 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 613D5FC7301CBB73002EC6D1;
-			remoteInfo = MouseDisplayLock;
-		};
-		613D5FE0301CBB74002EC6D1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 613D5FC0301CBB73002EC6D1 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 613D5FC7301CBB73002EC6D1;
-			remoteInfo = MouseDisplayLock;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
 		613D5FC8301CBB73002EC6D1 /* MouseDisplayLock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MouseDisplayLock.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		613D5FD5301CBB74002EC6D1 /* MouseDisplayLockTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MouseDisplayLockTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		613D5FDF301CBB74002EC6D1 /* MouseDisplayLockUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MouseDisplayLockUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		613D5FCA301CBB73002EC6D1 /* MouseDisplayLock */ = {
+		613D5FCA301CBB74002EC6D1 /* MouseDisplayLock */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = MouseDisplayLock;
-			sourceTree = "<group>";
-		};
-		613D5FD8301CBB74002EC6D1 /* MouseDisplayLockTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = MouseDisplayLockTests;
-			sourceTree = "<group>";
-		};
-		613D5FE2301CBB74002EC6D1 /* MouseDisplayLockUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = MouseDisplayLockUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -53,25 +24,13 @@
 			files = (
 			);
 		};
-		613D5FD2301CBB74002EC6D1 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			files = (
-			);
-		};
-		613D5FDC301CBB74002EC6D1 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			files = (
-			);
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		613D5FBF301CBB73002EC6D1 = {
 			isa = PBXGroup;
 			children = (
-				613D5FCA301CBB73002EC6D1 /* MouseDisplayLock */,
-				613D5FD8301CBB74002EC6D1 /* MouseDisplayLockTests */,
-				613D5FE2301CBB74002EC6D1 /* MouseDisplayLockUITests */,
+				613D5FCA301CBB74002EC6D1 /* MouseDisplayLock */,
 				613D5FC9301CBB73002EC6D1 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -80,8 +39,6 @@
 			isa = PBXGroup;
 			children = (
 				613D5FC8301CBB73002EC6D1 /* MouseDisplayLock.app */,
-				613D5FD5301CBB74002EC6D1 /* MouseDisplayLockTests.xctest */,
-				613D5FDF301CBB74002EC6D1 /* MouseDisplayLockUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -100,54 +57,12 @@
 			buildRules = (
 			);
 			fileSystemSynchronizedGroups = (
-				613D5FCA301CBB73002EC6D1 /* MouseDisplayLock */,
+				613D5FCA301CBB74002EC6D1 /* MouseDisplayLock */,
 			);
 			name = MouseDisplayLock;
 			productName = MouseDisplayLock;
 			productReference = 613D5FC8301CBB73002EC6D1 /* MouseDisplayLock.app */;
 			productType = "com.apple.product-type.application";
-		};
-		613D5FD4301CBB74002EC6D1 /* MouseDisplayLockTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 613D5FEA301CBB74002EC6D1 /* Build configuration list for PBXNativeTarget "MouseDisplayLockTests" */;
-			buildPhases = (
-				613D5FD1301CBB74002EC6D1 /* Sources */,
-				613D5FD2301CBB74002EC6D1 /* Frameworks */,
-				613D5FD3301CBB74002EC6D1 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				613D5FD7301CBB74002EC6D1 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				613D5FD8301CBB74002EC6D1 /* MouseDisplayLockTests */,
-			);
-			name = MouseDisplayLockTests;
-			productName = MouseDisplayLockTests;
-			productReference = 613D5FD5301CBB74002EC6D1 /* MouseDisplayLockTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		613D5FDE301CBB74002EC6D1 /* MouseDisplayLockUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 613D5FED301CBB74002EC6D1 /* Build configuration list for PBXNativeTarget "MouseDisplayLockUITests" */;
-			buildPhases = (
-				613D5FDB301CBB74002EC6D1 /* Sources */,
-				613D5FDC301CBB74002EC6D1 /* Frameworks */,
-				613D5FDD301CBB74002EC6D1 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				613D5FE1301CBB74002EC6D1 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				613D5FE2301CBB74002EC6D1 /* MouseDisplayLockUITests */,
-			);
-			name = MouseDisplayLockUITests;
-			productName = MouseDisplayLockUITests;
-			productReference = 613D5FDF301CBB74002EC6D1 /* MouseDisplayLockUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
 
@@ -161,14 +76,6 @@
 				TargetAttributes = {
 					613D5FC7301CBB73002EC6D1 = {
 						CreatedOnToolsVersion = 27.0;
-					};
-					613D5FD4301CBB74002EC6D1 = {
-						CreatedOnToolsVersion = 27.0;
-						TestTargetID = 613D5FC7301CBB73002EC6D1;
-					};
-					613D5FDE301CBB74002EC6D1 = {
-						CreatedOnToolsVersion = 27.0;
-						TestTargetID = 613D5FC7301CBB73002EC6D1;
 					};
 				};
 			};
@@ -187,24 +94,12 @@
 			projectRoot = "";
 			targets = (
 				613D5FC7301CBB73002EC6D1 /* MouseDisplayLock */,
-				613D5FD4301CBB74002EC6D1 /* MouseDisplayLockTests */,
-				613D5FDE301CBB74002EC6D1 /* MouseDisplayLockUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		613D5FC6301CBB73002EC6D1 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			files = (
-			);
-		};
-		613D5FD3301CBB74002EC6D1 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			files = (
-			);
-		};
-		613D5FDD301CBB74002EC6D1 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
 			);
@@ -217,30 +112,7 @@
 			files = (
 			);
 		};
-		613D5FD1301CBB74002EC6D1 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			files = (
-			);
-		};
-		613D5FDB301CBB74002EC6D1 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			files = (
-			);
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		613D5FD7301CBB74002EC6D1 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 613D5FC7301CBB73002EC6D1 /* MouseDisplayLock */;
-			targetProxy = 613D5FD6301CBB74002EC6D1 /* PBXContainerItemProxy */;
-		};
-		613D5FE1301CBB74002EC6D1 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 613D5FC7301CBB73002EC6D1 /* MouseDisplayLock */;
-			targetProxy = 613D5FE0301CBB74002EC6D1 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		613D5FE5301CBB74002EC6D1 /* Debug configuration for PBXProject "MouseDisplayLock" */ = {
@@ -377,6 +249,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -409,7 +282,8 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHUMANReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -424,86 +298,6 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
-		613D5FEB301CBB74002EC6D1 /* Debug configuration for PBXNativeTarget "MouseDisplayLockTests" */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 97QZQ678P7;
-				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 27.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = Clipaste.MouseDisplayLockTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MouseDisplayLock.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MouseDisplayLock";
-			};
-			name = Debug;
-		};
-		613D5FEC301CBB74002EC6D1 /* Release configuration for PBXNativeTarget "MouseDisplayLockTests" */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 97QZQ678P7;
-				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 27.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = Clipaste.MouseDisplayLockTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MouseDisplayLock.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MouseDisplayLock";
-			};
-			name = Release;
-		};
-		613D5FEE301CBB74002EC6D1 /* Debug configuration for PBXNativeTarget "MouseDisplayLockUITests" */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 97QZQ678P7;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = Clipaste.MouseDisplayLockUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = MouseDisplayLock;
-			};
-			name = Debug;
-		};
-		613D5FEF301CBB74002EC6D1 /* Release configuration for PBXNativeTarget "MouseDisplayLockUITests" */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 97QZQ678P7;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = Clipaste.MouseDisplayLockUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = MouseDisplayLock;
 			};
 			name = Release;
 		};
@@ -523,22 +317,6 @@
 			buildConfigurations = (
 				613D5FE8301CBB74002EC6D1 /* Debug configuration for PBXNativeTarget "MouseDisplayLock" */,
 				613D5FE9301CBB74002EC6D1 /* Release configuration for PBXNativeTarget "MouseDisplayLock" */,
-			);
-			defaultConfigurationName = Release;
-		};
-		613D5FEA301CBB74002EC6D1 /* Build configuration list for PBXNativeTarget "MouseDisplayLockTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				613D5FEB301CBB74002EC6D1 /* Debug configuration for PBXNativeTarget "MouseDisplayLockTests" */,
-				613D5FEC301CBB74002EC6D1 /* Release configuration for PBXNativeTarget "MouseDisplayLockTests" */,
-			);
-			defaultConfigurationName = Release;
-		};
-		613D5FED301CBB74002EC6D1 /* Build configuration list for PBXNativeTarget "MouseDisplayLockUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				613D5FEE301CBB74002EC6D1 /* Debug configuration for PBXNativeTarget "MouseDisplayLockUITests" */,
-				613D5FEF301CBB74002EC6D1 /* Release configuration for PBXNativeTarget "MouseDisplayLockUITests" */,
 			);
 			defaultConfigurationName = Release;
 		};
