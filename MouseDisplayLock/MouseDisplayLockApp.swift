@@ -1070,18 +1070,18 @@ final class LockManager: ObservableObject {
          * 扩展事件掩码：不仅监听移动/拖动，还监听鼠标按下/抬起。
          * 这样我们可以在鼠标按下期间阻止边界解除，避免“穿屏点击”。
          */
-        let eventMask: CGEventMask = (
-            1 << CGEventType.mouseMoved.rawValue |
-            1 << CGEventType.leftMouseDragged.rawValue |
-            1 << CGEventType.rightMouseDragged.rawValue |
-            1 << CGEventType.otherMouseDragged.rawValue |
-            1 << CGEventType.leftMouseDown.rawValue |
-            1 << CGEventType.leftMouseUp.rawValue |
-            1 << CGEventType.rightMouseDown.rawValue |
-            1 << CGEventType.rightMouseUp.rawValue |
-            1 << CGEventType.otherMouseDown.rawValue |
-            1 << CGEventType.otherMouseUp.rawValue
-        )
+
+        var eventMask: CGEventMask = 0
+        eventMask |= (CGEventMask(1) << CGEventType.mouseMoved.rawValue)
+        eventMask |= (CGEventMask(1) << CGEventType.leftMouseDragged.rawValue)
+        eventMask |= (CGEventMask(1) << CGEventType.rightMouseDragged.rawValue)
+        eventMask |= (CGEventMask(1) << CGEventType.otherMouseDragged.rawValue)
+        eventMask |= (CGEventMask(1) << CGEventType.leftMouseDown.rawValue)
+        eventMask |= (CGEventMask(1) << CGEventType.leftMouseUp.rawValue)
+        eventMask |= (CGEventMask(1) << CGEventType.rightMouseDown.rawValue)
+        eventMask |= (CGEventMask(1) << CGEventType.rightMouseUp.rawValue)
+        eventMask |= (CGEventMask(1) << CGEventType.otherMouseDown.rawValue)
+        eventMask |= (CGEventMask(1) << CGEventType.otherMouseUp.rawValue)
 
 
         guard let port = CGEvent.tapCreate(
