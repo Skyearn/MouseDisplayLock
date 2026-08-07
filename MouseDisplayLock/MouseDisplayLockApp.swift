@@ -281,6 +281,11 @@ final class LockManager: ObservableObject {
     private let selectedAppsKey =
         "MouseDisplayLock.SelectedApplications"
 
+    // MARK: - 锁定状态持久化 Keys
+    private let lockStateKey = "MouseDisplayLock.LockState"
+    private let lockedDisplayIDKey = "MouseDisplayLock.LockedDisplayID"
+    private let lockedDisplayNameKey = "MouseDisplayLock.LockedDisplayName"
+
 
     // ========================================================
     // MARK: Init
@@ -319,6 +324,29 @@ final class LockManager: ObservableObject {
         installWorkspaceMonitor()
 
         installDisplayConfigurationMonitor()
+
+        // ---------- 恢复持久化的锁定状态 ----------
+        if UserDefaults.standard.bool(forKey: lockStateKey) {
+            let id = UserDefaults.standard.integer(forKey: lockedDisplayIDKey)
+            let name = UserDefaults.standard.string(forKey: lockedDisplayNameKey)
+
+            if id != 0,
+               let displayID = CGDirectDisplayID(exactly: id as NSNumber),
+               NSScreen.screens.contains(where: { Self.displayID(for: $0) == displayID }) {
+                // 显示器仍然存在，恢复锁定
+                lockedDisplayID = displayID
+                lockedDisplayName = name
+                isLocked = true
+                print("🔒 恢复锁定状态，显示器：\(name ?? "未知")")
+            } else {
+                // 保存的显示器已不存在，清除无效状态
+                UserDefaults.standard.removeObject(forKey: lockStateKey)
+                UserDefaults.standard.removeObject(forKey: lockedDisplayIDKey)
+                UserDefaults.standard.removeObject(forKey: lockedDisplayNameKey)
+                print("⚠️ 保存的显示器已不存在，已清除锁定状态")
+            }
+        }
+        // ---------------------------------------
 
         updateApplicationState()
     }
@@ -389,6 +417,8 @@ final class LockManager: ObservableObject {
         lockedDisplayID = nil
 
         lockedDisplayName = nil
+
+        // 注意：退出时不清除持久化状态，以便下次启动恢复
     }
 
 
@@ -497,6 +527,15 @@ final class LockManager: ObservableObject {
         isLocked =
             true
 
+        // ---------- 持久化锁定状态 ----------
+        UserDefaults.standard.set(true, forKey: lockStateKey)
+        if let id = lockedDisplayID {
+            UserDefaults.standard.set(id, forKey: lockedDisplayIDKey)
+        }
+        if let name = lockedDisplayName {
+            UserDefaults.standard.set(name, forKey: lockedDisplayNameKey)
+        }
+        // ---------------------------------
 
         print(
             """
@@ -547,6 +586,11 @@ final class LockManager: ObservableObject {
         lockedDisplayName =
             nil
 
+        // ---------- 清除持久化状态 ----------
+        UserDefaults.standard.removeObject(forKey: lockStateKey)
+        UserDefaults.standard.removeObject(forKey: lockedDisplayIDKey)
+        UserDefaults.standard.removeObject(forKey: lockedDisplayNameKey)
+        // ---------------------------------
 
         print(
             "🔓 Mouse Display Lock disabled"
