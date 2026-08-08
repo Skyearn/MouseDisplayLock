@@ -1884,6 +1884,10 @@ final class LockManager: ObservableObject {
     // ========================================================
 
     func chooseApplication() {
+
+        // 关闭菜单栏面板
+        NSApp.keyWindow?.close()
+
         // 激活应用自身，让 NSOpenPanel 获得键盘焦点和鼠标事件
         NSApp.activate(ignoringOtherApps: true)
 
